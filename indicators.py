@@ -1,7 +1,7 @@
 import logging
 from typing import Tuple
-import talib
-import numpy as np
+from numpy.lib.function_base import average
+import pandas as pd
 import math
 
 from ticker import Ticker
@@ -34,18 +34,22 @@ class Indicators:
             averages = self.averages_high
             
         
-        np_averages = np.array(averages)
-        
-        sma = talib.SMA(np_averages, period)    
+        numbers_series = pd.Series(averages)
+        windows = numbers_series.rolling(period)
+        moving_averages = windows.mean()
 
-        sma_previous = sma[-2] if len(sma) >= period else 0
-        sma_current = sma[-1] if len(sma) >= period else 0
+        moving_averages_list = moving_averages.tolist()
 
-        # print('Previous: {0}'.format(sma_previous))
-        # print('Current: {0}'.format(sma_current))
-
+        sma_previous = moving_averages_list[-2] if len(moving_averages_list) >= period else 0
+        sma_current = moving_averages_list[-1] if len(moving_averages_list) >= period else 0
 
         return sma_previous, sma_current
 
+
+    def __index_in_list(self, a_list: list, index: int) -> bool:
+    
+        print((index < len(a_list)))
+
+        return (index < len(a_list))
 
     

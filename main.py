@@ -9,13 +9,13 @@ import matplotlib.pyplot as plt
 from mercadoRepository import MercadoRepository
 from indicators import Indicators
 
-
-
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', datefmt='%Y-%m-%d %H:%M')
 logger = logging.getLogger(__name__)
 
 data_api_running = True
+opened_order = False
+last_action_type = ''
 
 def handler():
 
@@ -75,6 +75,9 @@ def handler():
 
         
         transactionData['action_type'] = evaluate_buy_sell_action(transactionData)
+
+#        last_action_type = ''
+
         
         json_data = json.dumps(transactionData)
         
@@ -88,7 +91,7 @@ def handler():
 
         previous_price = transactionData['last_price']
 
-        time.sleep(120)
+        time.sleep(1)
 
 
 def evaluate_buy_sell_action(data: dict) -> str:
@@ -107,7 +110,7 @@ def evaluate_buy_sell_action(data: dict) -> str:
 
     '''
 
-    if (sma_high - sma_low) < 0:
+    if (sma_high - sma_low) < 0 and data['action_type'] != 'sell':
         action_type = 'sell' 
     elif (sma_high - sma_low) > 0:
         action_type = 'buy'
